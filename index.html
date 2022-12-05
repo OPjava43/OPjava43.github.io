@@ -42,12 +42,12 @@
             var x = randnum;
             var y = canvas.height-400;
             var dx = -2; //0 - Math.floor(Math.random() *5 );
-            var dy = +2;
-            var ballRadius = 10;
-            var paddleHeight = 10;
+            var dy = 2;
+            var squareSize = 16;
+            var paddleHeight = 16;
             var paddleWidth = 75;
             var paddleOFFsetbottom = 20;
-            var paddleX = (canvas.width - paddleWidth)
+            var paddleX = (canvas.width - paddleWidth);
             var rightPressed = false;
             var leftPressed = false;
             var brickRowCount = 6;
@@ -57,6 +57,8 @@
             var brickPadding = 5;
             var brickOFFsetTop = 30;
             var brickOFFsetLeft = 2;
+            var seconds = 0;
+
 
             var bricks = [];
             for (var c = 0; c < brickColumnCount; c++) {
@@ -121,9 +123,9 @@
 
             }
 
-            function drawBall() {
+            function drawSquare() {
                 ctx.beginPath();
-                ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+                ctx.rect(x, y, squareSize, squareSize)
                 ctx.fillStyle = "green";
                 ctx.fill();
                 ctx.closePath();
@@ -158,35 +160,34 @@
 
 
 
+
+
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                drawBall();
+                drawSquare();
                 drawPaddle();
                 drawBricks();
-                collisionDetection();
-                drawScore()
+                
+                PaddleContact();
+                //collisionDetection();
+                //drawScore()
                 x += dx;
                 y += dy;
 
-                if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-                dx = -dx
-                }
 
-                if (y + dy < ballRadius) {
+
+
+
+                if (x + dx > canvas.width - squareSize) {
+                    dx = -dx;
+                }
+                if (x + dx < 0) {
+                    dx = -dx;
+                }
+                if (y + dy < 0) {
                     dy = -dy 
                 }
-                if (y > canvas.height - ballRadius - paddleOFFsetbottom - paddleHeight) {
-                    if (x > paddleX && x < paddleX + paddleWidth ) {
-                        dy = -dy
-                        /*if (rightPressed) {
-                           dy === 9
-                           console.log(hello)
-                        } else if (leftPressed) {
-                           dy === 5 
-                        }*/
-                    }
-                }
-                 if (y > canvas.height - paddleOFFsetbottom) {
+                if (y > canvas.height - paddleOFFsetbottom - paddleHeight) {
                     alert("GAME OVER ")
                     document.location.reload();
                     clearInterval(interval);
@@ -197,11 +198,36 @@
                 } else if (leftPressed) {
                     paddleX = Math.max(paddleX - 7, 0);
                 }
+
             }   
+            function PaddleContact () {
+                if (seconds > 0) {
+                    if (paddleX < x + squareSize && 
+                        paddleX + paddleWidth > x && 
+                        canvas.height - (paddleOFFsetbottom + paddleHeight) < y + squareSize && 
+                        paddleHeight + canvas.height - (paddleOFFsetbottom + paddleHeight) > y 
+                        ) {
+                        dy = -dy;
+                        console.log("uh oh");
+                        if (x + squareSize > paddleX - 1 && x + squareSize< paddleX + 12 && seconds === 0|| x + squareSize < paddleX + paddleWidth + 1 && x > paddleX + (paddleWidth - 12)) {
+                            dx = -dx;
+                        }
+                        seconds = 0;
+                    }
+
+                }
+
+            }
+            
+            function Timer() {
+                seconds =+ 1;
+                console.log("timer");
+            }
+            
 
 
             const interval = setInterval(draw, 10);
- 
+            const milliseconds = setInterval(Timer, 1000)
 
         </script>
     </body>
