@@ -49,11 +49,11 @@
             var leftPressed = false;
             var brickRowCount = 6;
             var brickColumnCount = 8;
-            var brickWidth = 75;
+            var brickWidth = 80;
             var brickHeight = 20;
-            var brickPadding = 5;
+            var brickPadding = 0;
             var brickOFFsetTop = 30;
-            var brickOFFsetLeft = 2;
+            var brickOFFsetLeft = 0;
             var seconds = 0;
 
 
@@ -97,7 +97,11 @@
                     for (var r = 0; r < brickRowCount; r++) {
                         var b = bricks[c][r];
                         if (b.status === 1) {
-                            if (x - ballRadius> b.x && x - ballRadius < b.x + brickWidth && y - ballRadius> b.y && y - ballRadius< b.y + brickHeight) {
+                            if (b.x < x + squareSize &&
+                                b.x + brickWidth > x &&
+                                b.y < y + squareSize &&
+                                b.y + brickHeight > y
+                            ) {
                                 dy = -dy;
                                 b.status = 0;
                                 score++;
@@ -166,7 +170,7 @@
                 drawBricks();
                 
                 PaddleContact();
-                //collisionDetection();
+                collisionDetection();
                 //drawScore()
                 x += dx;
                 y += dy;
@@ -207,18 +211,24 @@
                         dy = -dy;
                         console.log("uh oh");
                         if (x + squareSize >= paddleX && 
-                            x + squareSize <= paddleX + 20 && 
-                            seconds > 0|| 
-                            x + squareSize <= paddleX + paddleWidth && 
-                            x >= paddleX + (paddleWidth - 12)
+                            x + squareSize <= paddleX + 20 
                         ) {
-                            if (dx = -2) {
-                            dx = dx;
-                            }
-                            if (dx = 2) {
+                            if(dx + dx < 0) {
+                                dx = dx;
+                            } 
+                            if(dx + dx > 0) {
                                 dx = -dx;
                             }
-                            console.log("corner");
+                        }
+                        if (x <= paddleX + paddleWidth && 
+                            x >= paddleX + (paddleWidth - 12)
+                        ) {
+                            if(dx + dx < 0) {
+                                dx = -dx;
+                            } 
+                            if(dx + dx > 0) {
+                                dx = dx;
+                            }
                         }
                         seconds = 0;
                     }
