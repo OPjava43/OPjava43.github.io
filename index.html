@@ -27,18 +27,15 @@
         <canvas id="myCanvas" width="640" height="640"></canvas>
 
 
-        <script>
-            var randnum = Math.floor(Math.random() *499)
-            if (randnum < 12){
-                randnum = Math.floor(Math.random() *499)
-            }
-
-
-            
+        <script>     
             
             var score = 0
             var canvas = document.getElementById("myCanvas");
             var ctx = canvas.getContext("2d");
+            var randnum = Math.floor(Math.random() *624)
+            if (randnum < 620){
+                randnum = Math.floor(Math.random() *624)
+            }
             var x = randnum;
             var y = canvas.height-400;
             var dx = -2; //0 - Math.floor(Math.random() *5 );
@@ -206,11 +203,22 @@
                         paddleX + paddleWidth > x && 
                         canvas.height - (paddleOFFsetbottom + paddleHeight) < y + squareSize && 
                         paddleHeight + canvas.height - (paddleOFFsetbottom + paddleHeight) > y 
-                        ) {
+                    ) {
                         dy = -dy;
                         console.log("uh oh");
-                        if (x + squareSize > paddleX - 1 && x + squareSize< paddleX + 12 && seconds === 0|| x + squareSize < paddleX + paddleWidth + 1 && x > paddleX + (paddleWidth - 12)) {
-                            dx = -dx;
+                        if (x + squareSize >= paddleX && 
+                            x + squareSize <= paddleX + 20 && 
+                            seconds > 0|| 
+                            x + squareSize <= paddleX + paddleWidth && 
+                            x >= paddleX + (paddleWidth - 12)
+                        ) {
+                            if (dx = -2) {
+                            dx = dx;
+                            }
+                            if (dx = 2) {
+                                dx = -dx;
+                            }
+                            console.log("corner");
                         }
                         seconds = 0;
                     }
