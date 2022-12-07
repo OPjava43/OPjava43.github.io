@@ -27,7 +27,10 @@
         <canvas id="myCanvas" width="640" height="640"></canvas>
 
 
-        <script>     
+        <script> 
+            //**************************************************>
+            //VARIABLES
+            //**************************************************>    
             
             var score = 0
             var canvas = document.getElementById("myCanvas");
@@ -52,9 +55,18 @@
             var brickWidth = 80;
             var brickHeight = 20;
             var brickPadding = 0;
-            var brickOFFsetTop = 30;
+            var brickOFFsetTop = 60;
             var brickOFFsetLeft = 0;
             var seconds = 0;
+            const interval = setInterval(draw, 10);
+            const milliseconds = setInterval(Timer, 1000);
+            const Xcolor = setInterval(Xfunction, 1);
+            var bricksImg = document.createElement("img");
+            bricksImg.src = "img/bricks.png";
+            var backgroundImg = document.createElement("img");
+            backgroundImg.src = "img/space.png"; 
+
+            
 
 
             var bricks = [];
@@ -68,6 +80,10 @@
             document.addEventListener("keydown", keyDownHandler, false);
             document.addEventListener("keyup", keyUpHandler, false);
             document.addEventListener("mousemove", mouseMoveHandler, false);
+
+            //**************************************************>
+            //FUNCTIONS
+            //**************************************************>
 
             function keyDownHandler(e) {
                 if (e.key === "Right" || e.key === "ArrowRight") {
@@ -92,35 +108,10 @@
                 }
             }
 
-            function collisionDetection() {
-                for (var c = 0; c < brickColumnCount; c++) {
-                    for (var r = 0; r < brickRowCount; r++) {
-                        var b = bricks[c][r];
-                        if (b.status === 1) {
-                            if (b.x < x + squareSize &&
-                                b.x + brickWidth > x &&
-                                b.y < y + squareSize &&
-                                b.y + brickHeight > y
-                            ) {
-                                dy = -dy;
-                                b.status = 0;
-                                score++;
-                                if (score === brickRowCount * brickColumnCount) {
-                                    alert("YOU WIN, CONGRATULATIONS!") 
-                                    document.location.reload();
-                                    clearInterval(interval);
-                                }
-                                
-                            }
-                        }
-                    }
-                }
-            }
-
             function drawScore() {
-                ctx.font = "16px Arial";
-                ctx.fillStyle = "0095DD"
-                ctx.fillText(`Score: ${score}`, 8, 20 );
+                ctx.font = "50px Arvo";
+                ctx.fillStyle = "black"
+                ctx.fillText(`${score}`, 8, 45 );
 
             }
 
@@ -140,6 +131,36 @@
                 ctx.closePath();
             }
 
+            function Xfunction() {
+                if (r === 1 ||
+                    r === 2
+                ) {
+                    ctx.fillStyle = "red";
+                }
+                else if (r === 3  ||
+                    r === 4
+                ) {
+                    ctx.fillStyle = "red";
+                }
+                else if (r === 1 ||
+                         r === 2
+                ) {
+                    ctx.fillStyle = "blue";
+                }
+            }
+            function Timer() {
+                seconds =+ 1;
+                console.log("timer");
+            }
+
+            function movePaddle() {
+                if (rightPressed) {
+                    paddleX = Math.min(paddleX + 7, canvas.width - paddleWidth);
+                } else if (leftPressed) {
+                    paddleX = Math.max(paddleX - 7, 0);
+                }
+            }
+
             function drawBricks() {
                 for (var c = 0; c < brickColumnCount; c++) {
                     for (var r = 0; r < brickRowCount; r++) {
@@ -150,35 +171,96 @@
                             bricks[c][r].x = brickX;
                             bricks[c][r].y = brickY;
                             ctx.beginPath();
-                            ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                            ctx.fillStyle = "#0095DD";
+                            ctx.drawImage(bricksImg, brickX, brickY, brickWidth, brickHeight);
+                            //Xfunction();
+                            //ctx.fillStyle = "img/bricks.png;"
                             ctx.fill();
                             ctx.closePath(); 
                         }
                     }
                 }
             }
+            //**************************************************>
+            //COLLISION
+            //**************************************************>
+            function Corner() {
+                if (x + squareSize >= paddleX && 
+                    x + squareSize <= paddleX + 8 
+                ) {
+                    if(dx + dx < 0) {
+                        dx = dx;
+                    } 
+                    if(dx + dx > 0) {
+                        dx = -dx;
+                    }
+                }
+                if (x <= paddleX + paddleWidth && 
+                    x >= paddleX + (paddleWidth - 8)
+                ) {
+                    if(dx + dx < 0) {
+                        dx = -dx;
+                    } 
+                    if(dx + dx > 0) {
+                        dx = dx;
+                    }
+                }
+            }
 
+            function PaddleContact () {
+                if (seconds > 0) {
+                    if (paddleX < x + squareSize && 
+                        paddleX + paddleWidth > x && 
+                        canvas.height - (paddleOFFsetbottom + paddleHeight) < y + squareSize && 
+                        paddleHeight + canvas.height - (paddleOFFsetbottom + paddleHeight) > y 
+                    ) {
+                        dy = -dy;
+                        console.log("uh oh");
+                        Corner();
+                        if (rightPressed) {
+                            dy -= 1;
+  
+                            console.log("directional");
+                        }
+                        if (leftPressed) {
+                            dy -= 1;
+  
+                            console.log("directional");
+                        }
+                        seconds = 0;
+                    }
 
+                }
 
+            }
 
+                        
 
-            function draw() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                drawSquare();
-                drawPaddle();
-                drawBricks();
-                
-                PaddleContact();
-                collisionDetection();
-                drawScore()
-                x += dx;
-                y += dy;
+            function collisionDetection() {
+                for (var c = 0; c < brickColumnCount; c++) {
+                    for (var r = 0; r < brickRowCount; r++) {
+                        var b = bricks[c][r];
+                        if (b.status === 1) {
+                            if (b.x < x + squareSize &&
+                                b.x + brickWidth > x &&
+                                b.y < y + squareSize &&
+                                b.y + brickHeight > y
+                            ) {
+                                dy = dy * -1;
+                                b.status = 0;
+                                score++;
+                                if (score === brickRowCount * brickColumnCount) {
+                                    alert("YOU WIN, CONGRATULATIONS!") 
+                                    document.location.reload();
+                                    clearInterval(interval);
+                                }
+                                
+                            }
+                        }
+                    }
+                }
+            }
 
-
-
-
-
+            function wallDetection() {
                 if (x + dx > canvas.width - squareSize) {
                     dx = -dx;
                 }
@@ -193,59 +275,36 @@
                     document.location.reload();
                     clearInterval(interval);
                 }
+            }
 
-                if (rightPressed) {
-                    paddleX = Math.min(paddleX + 7, canvas.width - paddleWidth);
-                } else if (leftPressed) {
-                    paddleX = Math.max(paddleX - 7, 0);
-                }
+
+            //**************************************************>
+            //DRAW
+            //**************************************************>
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
+                drawSquare();
+                drawPaddle();
+                collisionDetection();
+                drawBricks();
+                
+                PaddleContact();
+                drawScore()
+                x += dx;
+                y += dy;
+                // if (x)
+                movePaddle();
+                wallDetection();
+
 
             }   
-            function PaddleContact () {
-                if (seconds > 0) {
-                    if (paddleX < x + squareSize && 
-                        paddleX + paddleWidth > x && 
-                        canvas.height - (paddleOFFsetbottom + paddleHeight) < y + squareSize && 
-                        paddleHeight + canvas.height - (paddleOFFsetbottom + paddleHeight) > y 
-                    ) {
-                        dy = -dy;
-                        console.log("uh oh");
-                        if (x + squareSize >= paddleX && 
-                            x + squareSize <= paddleX + 20 
-                        ) {
-                            if(dx + dx < 0) {
-                                dx = dx;
-                            } 
-                            if(dx + dx > 0) {
-                                dx = -dx;
-                            }
-                        }
-                        if (x <= paddleX + paddleWidth && 
-                            x >= paddleX + (paddleWidth - 12)
-                        ) {
-                            if(dx + dx < 0) {
-                                dx = -dx;
-                            } 
-                            if(dx + dx > 0) {
-                                dx = dx;
-                            }
-                        }
-                        seconds = 0;
-                    }
-
-                }
-
-            }
             
-            function Timer() {
-                seconds =+ 1;
-                console.log("timer");
-            }
+            
             
 
 
-            const interval = setInterval(draw, 10);
-            const milliseconds = setInterval(Timer, 1000)
 
         </script>
     </body>
