@@ -60,7 +60,6 @@
             var seconds = 0;
             const interval = setInterval(draw, 10);
             const milliseconds = setInterval(Timer, 1000);
-            const Xcolor = setInterval(Xfunction, 1);
             var bricksImg = document.createElement("img");
             bricksImg.src = "img/bricks.png";
             var backgroundImg = document.createElement("img");
@@ -110,7 +109,7 @@
 
             function drawScore() {
                 ctx.font = "50px Arvo";
-                ctx.fillStyle = "black"
+                ctx.fillStyle = "#4EC6D5"
                 ctx.fillText(`${score}`, 8, 45 );
 
             }
@@ -118,7 +117,7 @@
             function drawSquare() {
                 ctx.beginPath();
                 ctx.rect(x, y, squareSize, squareSize)
-                ctx.fillStyle = "green";
+                ctx.fillStyle = "white";
                 ctx.fill();
                 ctx.closePath();
             }
@@ -126,27 +125,9 @@
             function drawPaddle() {
                 ctx.beginPath();
                 ctx.rect(paddleX, canvas.height - paddleHeight - paddleOFFsetbottom, paddleWidth, paddleHeight);
-                ctx.fillStyle = "red";
+                ctx.fillStyle = "yellow";
                 ctx.fill();
                 ctx.closePath();
-            }
-
-            function Xfunction() {
-                if (r === 1 ||
-                    r === 2
-                ) {
-                    ctx.fillStyle = "red";
-                }
-                else if (r === 3  ||
-                    r === 4
-                ) {
-                    ctx.fillStyle = "red";
-                }
-                else if (r === 1 ||
-                         r === 2
-                ) {
-                    ctx.fillStyle = "blue";
-                }
             }
             function Timer() {
                 seconds =+ 1;
@@ -172,8 +153,6 @@
                             bricks[c][r].y = brickY;
                             ctx.beginPath();
                             ctx.drawImage(bricksImg, brickX, brickY, brickWidth, brickHeight);
-                            //Xfunction();
-                            //ctx.fillStyle = "img/bricks.png;"
                             ctx.fill();
                             ctx.closePath(); 
                         }
@@ -216,7 +195,7 @@
                         dy = -dy;
                         console.log("uh oh");
                         Corner();
-                        if (rightPressed) {
+                        /*if (rightPressed) {
                             dy -= 1;
   
                             console.log("directional");
@@ -225,7 +204,7 @@
                             dy -= 1;
   
                             console.log("directional");
-                        }
+                        }*/
                         seconds = 0;
                     }
 
