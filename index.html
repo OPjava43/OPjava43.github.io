@@ -58,8 +58,10 @@
             var brickOFFsetTop = 60;
             var brickOFFsetLeft = 0;
             var seconds = 0;
+            var milliseconds = 0;
             const interval = setInterval(draw, 10);
-            const milliseconds = setInterval(Timer, 1000);
+            const secoundsTimer = setInterval(Timer, 1000);
+            const millisecoundTimer = setInterval(millisecondT, 1);
             var bricksImg = document.createElement("img");
             bricksImg.src = "img/bricks.png";
             var backgroundImg = document.createElement("img");
@@ -132,6 +134,11 @@
             function Timer() {
                 seconds =+ 1;
                 console.log("timer");
+                console.log(dx);
+                console.log(dy);
+            }
+            function millisecondT() {
+                milliseconds =+ 1;
             }
 
             function movePaddle() {
@@ -193,7 +200,6 @@
                         paddleHeight + canvas.height - (paddleOFFsetbottom + paddleHeight) > y 
                     ) {
                         dy = -dy;
-                        console.log("uh oh");
                         Corner();
                         /*if (rightPressed) {
                             dy -= 1;
@@ -224,7 +230,10 @@
                                 b.y < y + squareSize &&
                                 b.y + brickHeight > y
                             ) {
-                                dy = dy * -1;
+                                if (milliseconds >= 1) {
+                                    dy = -dy;
+                                    milliseconds = 0;
+                                }
                                 b.status = 0;
                                 score++;
                                 if (score === brickRowCount * brickColumnCount) {
@@ -268,7 +277,6 @@
                 drawPaddle();
                 collisionDetection();
                 drawBricks();
-                
                 PaddleContact();
                 drawScore()
                 x += dx;
@@ -276,7 +284,6 @@
                 // if (x)
                 movePaddle();
                 wallDetection();
-
 
             }   
             
