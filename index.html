@@ -27,7 +27,10 @@
         
         button {
             background: #f77062;
-            color: #fff
+            color: #fff;
+            font-size: 2rem;
+            margin-left: auto;
+            margin-right: auto;
             
         }
     </style>
@@ -68,8 +71,10 @@
             ctx.closePath();
         }
         //**************************************************>
-        //BOUNCE LOG
+        //BOUNCE LOG AND SPEED UP
         //**************************************************>
+        var pdx = 0;
+        var pdy = 0;
         var bounceTime = 0;
         var bounceNumber = 0;
         var bounceAmount = 3;
@@ -96,6 +101,10 @@
         function bounceNumberAdd() {
             if (dx === -4 || dx === 4) {
                 bounceNumber += 1;
+            }
+            if (bounceNumber === bounceNumberAmount) {
+                dxdyReset();
+                bounceNumber = 0;
             }
         }
         //**************************************************>
@@ -209,14 +218,14 @@
             }
         }
         //**************************************************>
-        //PLAYER
+        //Controls
         //**************************************************>
 
         var rightPressed = false;
         var leftPressed = false;
         var distanceFromLeft = paddleX - wallOffSet;
         var distanceFromRight = canvas.width - (paddleX + paddleWidth) - wallOffSet;
-
+        var multiplePause = 0;
 
         document.addEventListener("keydown", keyDownHandler, false);
         document.addEventListener("keyup", keyUpHandler, false);
@@ -227,6 +236,21 @@
                 rightPressed = true;
             } else if (e.key === "Left" || e.key === "ArrowLeft") {
                 leftPressed = true;
+            } else if (e.code === "Space") {
+                if (multiplePause === 0) {
+                    if (gamePaused === false) {
+                        dx = 0;
+                        dy = 0;
+                        paddleMovable = false;
+                        gamePaused = true; 
+                    } else if (gamePaused === true) {
+                        paddleMovable = true;
+                        dx = pdx;
+                        dy = pdy;
+                        gamePaused = false;
+                    }
+                    multiplePause += 1;
+                }
             }
         }
 
@@ -235,7 +259,10 @@
                 rightPressed = false;
             } else if (e.key === "Left" || e.key === "ArrowLeft") {
                 leftPressed = false;
+            } else if (e.code === "Space") {
+                multiplePause = 0;
             }
+
         }
 
         function mouseMoveHandler(e) {
@@ -273,20 +300,17 @@
         }
 
         function dxdyReset() {
-            if (bounceNumber === bounceNumberAmount) {
-                if (dx > 0) {
-                    dx = 2;
-                }
-                if (dx < 0) {
-                    dx = -2;
-                }
-                if (dy > 0) {
-                    dy = 2;
-                }
-                if (dy < 0) {
-                    dy = -2;
-                }
-                bounceNumber = 0;
+            if (dx > 0) {
+                dx = 2;
+            }
+            if (dx < 0) {
+                dx = -2;
+            }
+            if (dy > 0) {
+                dy = 2;
+            }
+            if (dy < 0) {
+                dy = -2;
             }
         }
 
@@ -368,6 +392,9 @@
         //GAME START AND END
         //**************************************************>
 
+        var pausePressed = false;
+        var gamePaused = false;
+
         function gameOver() {
             if (y > canvas.height - paddleOFFsetbottom - paddleHeight) {
                 dy = 0;
@@ -381,13 +408,14 @@
             ctx.font = "50px Arvo";
             ctx.fillStyle = "red";
             ctx.fillText("GAME OVER", canvas.width/2 - 150, canvas.height/2);
-            console.log("endText");
         }
 
         document.getElementById("btn").onclick = function() {
             document.location.reload();
             clearInterval(interval);
         }
+
+
 
 
 
@@ -408,9 +436,12 @@
             drawScore();
             x += dx;
             y += dy;
+            if (gamePaused === false)  {
+                pdx = dx;
+                pdy = dy;
+            } 
             movePaddle();
             wallDetection();
-            dxdyReset();
             gameOver();
         }
 
@@ -420,6 +451,5 @@
 
 
     </script>
-</body>
-
+    </body>
 </html>
