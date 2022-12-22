@@ -20,7 +20,7 @@
             background: #eee;
             display: block;
             margin: 0 auto;
-            padding: none;
+            padding: 5;
 
 
         }
@@ -29,6 +29,7 @@
             background: #f77062;
             color: #fff;
             font-size: 2rem;
+            display: block;
             margin-left: auto;
             margin-right: auto;
             
@@ -37,7 +38,7 @@
 </head>
 
 <body>
-    <button id = "btn">START</button> 
+    <button style = "position: relative; top:400px;"id = "btn">START</button> 
 
     <canvas id="myCanvas" width="700" height="700"></canvas>
 
@@ -45,14 +46,14 @@
     <script>
         //**************************************************>
         //VARIABLES
-        //**************************************************>    
-
+        //**************************************************>   
+        //"position:; left:450px; top:2px;"  
         var score = 0
         var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");
         var max = 653;//canvas.width - wallOffSet - squareSize - 1;
         var min = 30;//wallOffSet + 1;
-        var randnum = ((Math.random() * (max - min)) + min);//Math.floor(Math.random() * 624);
+        var randnum = ((Math.random() * (max - min)) + min);
         var x = randnum;
         var y = canvas.height - 400;
         var dx = -2; //0 - Math.floor(Math.random() *5 );
@@ -184,8 +185,8 @@
         //**************************************************>
         //BRICK VAR
         //**************************************************>
-        var brickRowCount = 6;
-        var brickColumnCount = 8;
+        var brickRowCount = 1;
+        var brickColumnCount = 1;
         var brickWidth = 80;
         var brickHeight = 20;
         var brickPadding = 0;
@@ -213,6 +214,7 @@
                         ctx.drawImage(bricksImg, brickX, brickY, brickWidth, brickHeight);
                         ctx.fill();
                         ctx.closePath();
+
                     }
                 }
             }
@@ -277,7 +279,7 @@
             }
         }   
 
-        function movePaddle() {
+        function movePaddle() { 
             if (paddleMovable === true) {
                 if (rightPressed) {
                     paddleX = Math.min(paddleX + 7, canvas.width - paddleWidth);
@@ -362,9 +364,7 @@
                             b.status = 0;
                             score++;
                             if (score === brickRowCount * brickColumnCount) {
-                                alert("YOU WIN, CONGRATULATIONS!")
-                                document.location.reload();
-                                clearInterval(interval);
+                                GameWon();
                             }
 
                         }
@@ -394,6 +394,9 @@
 
         var pausePressed = false;
         var gamePaused = false;
+        var gameStarted = false;
+        var isGameOver = false;
+        var isGameWon = false;
 
         function gameOver() {
             if (y > canvas.height - paddleOFFsetbottom - paddleHeight) {
@@ -401,6 +404,9 @@
                 dx = 0;
                 paddleMovable = false;
                 endText();
+                document.getElementById("btn").disabled = false;
+                document.getElementById("btn").style.display = "block";
+                isGameOver = true;
             }
         }
 
@@ -410,9 +416,44 @@
             ctx.fillText("GAME OVER", canvas.width/2 - 150, canvas.height/2);
         }
 
+
+        function GameWon() {
+            winText();
+            gameStarted === false;
+            document.getElementById("btn").disabled = false;
+            document.getElementById("btn").style.display = "block";
+            isGameWon = true;
+            dy = 0;
+            dx = 0;
+            paddleMovable = false;
+        }
+        function winText() {
+            ctx.font = "50px Arvo";
+            ctx.fillStyle = "red";
+            ctx.fillText("GAME OVER", canvas.width/2 - 150, canvas.height/2);
+        }
         document.getElementById("btn").onclick = function() {
-            document.location.reload();
-            clearInterval(interval);
+            /*document.location.reload();
+            clearInterval(interval);*/
+            document.getElementById("btn").disabled = true
+            document.getElementById("btn").style.display = "none";
+            if (isGameOver === true || isGameWon === true) {
+                dx = -2;
+                dy = 2;
+                randnum = ((Math.random() * (max - min)) + min);
+                x = randnum;
+                y = canvas.height - 400;
+                paddleMovable = true;
+            }
+            gameStarted = true;
+            for (var c = 0; c < brickColumnCount; c++) {
+                for (var r = 0; r < brickRowCount; r++) {
+                    var b = bricks[c][r];
+                    b.status = 1;
+                    score = 0;
+                }
+            }
+            
         }
 
 
@@ -426,23 +467,25 @@
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
-            drawHider();
-            drawSquare();
-            drawPaddle();
-            drawHider();
-            collisionDetection();
             drawBricks();
-            PaddleContact();
             drawScore();
-            x += dx;
-            y += dy;
-            if (gamePaused === false)  {
-                pdx = dx;
-                pdy = dy;
-            } 
-            movePaddle();
-            wallDetection();
-            gameOver();
+            if (gameStarted === true) {
+                drawHider();
+                drawSquare();
+                drawPaddle();
+                drawHider();
+                collisionDetection();
+                PaddleContact();
+                x += dx;
+                y += dy;
+                if (gamePaused === false)  {
+                    pdx = dx;
+                    pdy = dy;
+                } 
+                movePaddle();
+                wallDetection();
+                gameOver();
+            }
         }
 
 
